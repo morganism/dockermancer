@@ -1,110 +1,65 @@
 #!/usr/bin/env bash
 set -e
 
-echo "[*] Performing system autopsy…"
+echo "[*] Inspecting system sanity…"
 
-# -------------------------
-# WSL CHECK
-# -------------------------
+# WSL warning
 if grep -qi "microsoft" /proc/version 2>/dev/null; then
-    echo "[!] Warning: You're in WSL. Filesystem behaves like a drunk goat."
-    echo "[!] Things WILL work, but expect weirdness with Docker + binds."
+    echo "[!] WSL detected. Expect Docker to behave like a hungover donkey."
 fi
 
-# -------------------------
-# OS DETECTION
-# -------------------------
+# Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     OS="macos"
 elif [[ -f /etc/debian_version ]]; then
     OS="debian"
 else
-    echo "[-] Unsupported OS. This script doesn’t babysit exotic snowflake distros."
+    echo "[-] Unsupported OS. You're on your own, warlock."
     exit 1
 fi
 
-echo "[*] Detected OS: $OS"
-
-# -------------------------
-# PACKAGE MANAGER FUNCS
-# -------------------------
+echo "[*] OS: $OS"
 
 install_macos() {
-    # Homebrew ------------------------------------------------
+    # brew
     if ! command -v brew >/dev/null 2>&1; then
-        echo "[!] Homebrew missing. Install it with:"
+        echo "[!] Missing brew. Install manually:"
         echo '    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
         exit 1
     fi
 
-    # makeself ----------------------------------------------
+    # makeself
     if ! command -v makeself >/dev/null 2>&1; then
-        echo "[*] Installing makeself via brew…"
+        echo "[*] Installing makeself…"
         brew install makeself
     fi
 
-    # git ----------------------------------------------------
+    # git
     if ! command -v git >/dev/null 2>&1; then
-        echo "[*] Installing git via brew…"
+        echo "[*] Installing git…"
         brew install git
-    fi
-
-    # ruby ---------------------------------------------------
-    if ! command -v ruby >/dev/null 2>&1; then
-        echo "[*] Installing ruby via brew…"
-        brew install ruby
-    fi
-
-    # bundler -----------------------------------------------
-    if ! command -v bundle >/dev/null 2>&1; then
-        echo "[*] Installing bundler…"
-        gem install bundler
     fi
 }
 
 install_debian() {
-    # Update --------------------------------------------------
-    echo "[*] Updating apt…"
     sudo apt update -y
 
-    # makeself -----------------------------------------------
+    # makeself
     if ! command -v makeself >/dev/null 2>&1; then
         echo "[*] Installing makeself…"
         sudo apt install -y makeself
     fi
 
-    # git -----------------------------------------------------
+    # git
     if ! command -v git >/dev/null 2>&1; then
         echo "[*] Installing git…"
         sudo apt install -y git
     fi
-
-    # ruby ----------------------------------------------------
-    if ! command -v ruby >/dev/null 2>&1; then
-        echo "[*] Installing ruby-full…"
-        sudo apt install -y ruby-full
-    fi
-
-    # bundler ------------------------------------------------
-    if ! command -v bundle >/dev/null 2>&1; then
-        echo "[*] Installing bundler…"
-        sudo gem install bundler
-    fi
 }
 
-# -------------------------
-# EXECUTE INSTALLERS
-# -------------------------
-
 case "$OS" in
-    macos)
-        install_macos
-        ;;
-    debian)
-        install_debian
-        ;;
+    macos) install_macos ;;
+    debian) install_debian ;;
 esac
 
-echo "[✓] All dependencies installed. This machine is now tamed and obedient."
-echo "[✓] You may now build the .run package or summon the Dockermancer."
-
+echo "[✓] Env looks good. Go summon your .run file."

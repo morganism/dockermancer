@@ -5,6 +5,20 @@ Dockermancer packages a docker-compose stack (images, named volumes, bind mounts
 
 ## Quickstart
 
+rake [init] is a good thing to run as it will ensure all required software is present or install it if not.
+
+### Rake tasks
+
+- rake           : rake init : DEFAULT
+
+- rake init      : Run environment initialiser, ensures makeself, etc present
+
+- rake build     : Build a 'dockermancer' gem
+
+- rake makeself  : Create makeself .run installer (requires makeself to be installed, use 'rake [init]'§)
+
+
+
 ### Build gem
 ```
 gem build dockermancer.gemspec
