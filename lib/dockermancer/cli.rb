@@ -45,7 +45,7 @@ module Dockermancer
         images_dir = "\#{tmp}/images"
         volumes_dir = "\#{tmp}/volumes"
         binds_dir = "\#{tmp}/binds"
-        FileUtils.mkdir_p(images_dir, volumes_dir, binds_dir)
+        [images_dir, volumes_dir, binds_dir].each { |d| FileUtils.mkdir_p(d) }
 
         puts "Exporting images..."
         services.each do |_svc, cfg|
